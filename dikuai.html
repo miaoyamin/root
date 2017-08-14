@@ -1,0 +1,185 @@
+<!DOCTYPE html>  
+<html>  
+<head>  
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">  
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">  
+<meta name="apple-mobile-web-app-capable" content="yes">  
+<title>武汉海绵</title>  
+    <link rel="stylesheet" href="./ol2/theme/default/style.css" type="text/css">
+    <link rel="stylesheet" href="./css/mymap.css" type="text/css">
+    <link rel="stylesheet" href="css/jquery/font-awesome.css">
+    <link rel="stylesheet" href="css/jquery/normalize.css" type="text/css" />
+    <link rel="stylesheet" href="css/jquery/style.css" type="text/css" />
+    <link rel="stylesheet" href="./css/dikuai.css">
+
+    <link rel="stylesheet" href="css/bootstrap/bootstrap.css">
+    <script src="./js/jquery/jquery-3.2.1.min.js"></script>
+    <script src="js/jquery/index.js"></script>
+    <script src="js/jquery/jquery-ui.min.js"></script>  
+    <script src="js/bootstrap/bootstrap.js"></script>
+    <script src="./js/dikuai.js"></script>
+    <script src="./js/generateFig/showDetailPatch.js"></script>
+	<script src="./js/generateFig/showMechFig.js"></script>
+    <script src="./ol2/lib/OpenLayers.js"></script>
+    <script src="./js/haimian_style.js"></script>
+    <script src="./js/haimian_dikuai.js"></script>
+	
+</head>  
+<body onload="init()"> 
+<!--
+    <div>
+       <iframe MARGINWIDTH=0 MARGINHEIGHT=0 HSPACE=0 VSPACE=0 FRAMEBORDER=0 SCROLLING=no src="head.html" width="100%"  height="auto">
+      </iframe>
+    </div> 
+-->
+    <div id="map"></div>
+
+    <div class="selectshifanqu">
+	&nbsp;&nbsp;&nbsp;&nbsp;示范区&nbsp;<select id="area" class="combobox" style="margin-top:10px;">\
+			  <option value="全部" >全部</option>\
+			  <option value="青山区" >青山区</option>\
+			  <option value="四新区">四新区</option>\
+			</select>&nbsp;&nbsp;&nbsp;&nbsp;
+        <button type="button" class="btn btn-primary" id="patchtest" onclick="changeDikuai('tongji')">地块考核统计</button>
+       
+        <button type="button" class="btn btn-primary" id="patchdetail" onclick="changeDikuai('xiangxi')">地块/设施详细</button>
+    </div>
+
+<!-- 右侧panel -->
+<div class="rightpanel">
+<div class="accordion-container" id="layers_ztt">
+
+    <div class="containerpanel">
+        <div class=accordionnew>&nbsp;&nbsp;&nbsp;&nbsp;考核专题图<i class="fa fa-plus-circle" id="0"></i></div>
+        <div class="accordionnew-desc">
+            指标类型&nbsp;&nbsp;<select id="panelprintype">
+                <option selected>水生态</option>
+                <select>
+            <div class="labelvalue"><label><input type="checkbox" value="年径流总量控制率" id="chk_layer_njlzlkzl" onclick="addRemoveLayers('njlzlkzl')" checked="checked">&nbsp;&nbsp;年径流总量控制率</label></div>
+            <div class="labelvalue"><label><input type="checkbox" value="生态岸线恢复" id="chk_layer_staxhf" onclick="addRemoveLayers('#')">&nbsp;&nbsp;生态岸线恢复</label></div>
+            <div class="labelvalue"><label><input type="checkbox" value="地下水位" id="chk_layer_dxsw" onclick="addRemoveLayers('#')">&nbsp;&nbsp;地下水位</label></div>
+            <div class="labelvalue"><label><input type="checkbox" value="城市热岛效应" id="chk_layer_csrdxy" onclick="addRemoveLayers('#')">&nbsp;&nbsp;城市热岛效应</label></div>
+            <div class="labelvalue"><label><input type="checkbox" value="降雨滞蓄率" id="chk_layer_jyzxl" onclick="addRemoveLayers('jyzxl')">&nbsp;&nbsp;降雨滞蓄率</label></div>
+            <div class="labelvalue"><label><input type="checkbox" value="水域面积率" id="chk_layer_symjl" onclick="addRemoveLayers('symjl')">&nbsp;&nbsp;水域面积率</label></div>
+        </div>
+    </div>
+</div>
+<div class="accordion-container" style="display:none; " id="layers_base">
+
+    <div class="containerpanel">
+        <div class="accordionnew">&nbsp;&nbsp;&nbsp;&nbsp;基础信息<i class="fa fa-plus-circle" id="1"></i></div>
+        <div class="accordionnew-desc">
+            <div class="labelvalue"><label><input type="checkbox" value="数字高程" id="chk_layer_dem" onclick="addRemoveLayers('dem')">&nbsp;&nbsp;数字高程</label></div>
+            <div class="labelvalue"><label><input type="checkbox" value="排水管网" id="chk_layer_psgw" onclick="addRemoveLayers('psgw')">&nbsp;&nbsp;排水管网</label></div>
+            <div class="labelvalue"><label><input type="checkbox" value="污水管网" id="chk_layer_wsgw" onclick="addRemoveLayers('wsgw')">&nbsp;&nbsp;污水管网</label></div>
+            <div class="labelvalue"><label><input type="checkbox" value="下垫面" id="chk_layer_xdm" onclick="#">&nbsp;&nbsp;下垫面</label></div>
+        </div>
+    </div>
+</div>
+
+<div class="accordion-container" style="display:none; " id="layers_sheshi">
+
+    <div class="containerpanel">
+        <div class="accordionnew">&nbsp;&nbsp;&nbsp;&nbsp;海绵设施<i class="fa fa-plus-circle" id="2"></i></div>
+        <div class="accordionnew-desc">
+            <div class="labelvalue"><label><input type="checkbox" value="雨水花园" id="chk_layer_yshy" onclick="addRemoveLayers('yshy')">&nbsp;&nbsp;雨水花园</label></div>
+            <div class="labelvalue"><label><input type="checkbox" value="透水铺装" id="chk_layer_tspz" onclick="addRemoveLayers('tspz')">&nbsp;&nbsp;透水铺装</label></div>
+            <div class="labelvalue"><label><input type="checkbox" value="雨水模块" id="chk_layer_ysmk" onclick="addRemoveLayers('ysmk')">&nbsp;&nbsp;雨水模块</label></div>
+            <div class="labelvalue"><label><input type="checkbox" value="雨水桶" id="chk_layer_yst" onclick="addRemoveLayers('yst')">&nbsp;&nbsp;雨水桶</label></div>
+        </div>
+    </div>
+</div>
+
+<div class="accordion-container" style="display:none; " id="layers_jiance">
+
+    <div class="containerpanel">
+        <div class="accordionnew">&nbsp;&nbsp;&nbsp;&nbsp;监测站点<i class="fa fa-plus-circle" id="3"></i></div>
+        <div class="accordionnew-desc">
+            <div class="labelvalue"><label><input type="checkbox" value="雨量/流量站点" id="chk_layer_yuliang" onclick="addRemoveLayers('yuliang')">&nbsp;&nbsp;雨量/流量站点</label></div>
+        </div>
+    </div>
+
+</div>
+</div>
+    <div id="legend" class="legend">
+        <img id="img_ztt" src="./img/ztt_njlzl.png">
+    </div>
+
+
+    <div class="modal fade" id="newwindow"><!--模态弹出框-->
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form class="form-horizontal">
+                    <div class="modal-body">
+						
+						<div class="modal-header" style="padding-top:8px;" id="areasearch"></div>
+						
+						<div class="control-modal">
+						<div id="tabtop"></div><div id="tabdetail" class="tabdetail"></div><!--文字图片介绍-->
+						</div>
+                     
+						<div class="control-modal">
+                        <div id="result"></div><!--文字图片介绍-->
+                        </div>
+
+                    </div>
+                </form>
+                <img data-dismiss="modal" src="img/exit.png" style="position: absolute;top: 0;right: 0;"/>
+
+            </div>
+        </div>
+    </div>
+    
+   <div class="modal fade" style="margin-left:450px; margin-top:150px;" id="newwindow1"><!--模态弹出框-->
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form class="form-horizontal">
+                    <div class="modal-body">
+                        <div class="modal-header" id="title1"></div><!--标题-->
+						<div class="control-modal">
+                        <div id="tabtop"></div><div id="tabdetail1"></div>
+                        </div>
+
+                    </div>
+                </form>
+                <img data-dismiss="modal" src="img/exit.png" style="position: absolute;top: 0;right: 0;"/>
+
+            </div>
+        </div>
+    </div>
+       <div class="modal fade" style="margin-left:-200px; margin-top:120px;" id="newwindow2"><!--模态弹出框-->
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form class="form-horizontal">
+                    <div class="modal-body">
+                        <div class="modal-header" id="title2"></div><!--标题-->
+						<div class="control-modal">
+                        <div id="tabtop"></div><div id="tabdetail2"></div>
+                        </div>
+
+                    </div>
+                </form>
+                <img data-dismiss="modal" src="img/exit.png" style="position: absolute;top: 0;right: 0;"/>
+
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" style="margin-left:180px; margin-top:120px;" id="newwindow3"><!--模态弹出框-->
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form class="form-horizontal">
+                    <div class="modal-body">
+                        <div class="modal-header" id="title3"></div><!--标题-->
+						<div class="control-modal">
+                        <div id="tabtop"></div><div id="tabdetail3"></div>
+                        </div>
+
+                    </div>
+                </form>
+                <img data-dismiss="modal" src="img/exit.png" style="position: absolute;top: 0;right: 0;"/>
+
+            </div>
+        </div>
+    </div>
+
+</body>
